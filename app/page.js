@@ -3,13 +3,17 @@
 import { useState } from "react";
 import UserModal from "../components/UserModal";
 import Sidebar from "../components/Sidebar";
+import { RiUserAddFill } from "react-icons/ri";
+import { MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+import { IoIosSearch } from "react-icons/io";
 
 const page = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // const [isCollapsed, setIsCollapsed] = useState(false);
 
   const [users, setUsers] = useState([
     {
@@ -124,41 +128,48 @@ const page = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex bg-[#e5e7eb] text-[#29292F]">
       {/* Sidebar */}
-      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      {/* <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} /> */}
+      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Administrator</h1>
+        <div className="flex justify-between items-center mb-4 bg-white p-4">
+          <h1 className="text-2xl font-medium">Administrator</h1>
           <button
             onClick={() => {
               setIsOpen(true);
               setSelectedUser(null);
               setNewUser({ name: "", email: "", role: "", status: true });
             }}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            className="bg-[#BAC3FF] text-[#222c61] px-4 py-2 rounded hover:bg-blue-600 transition flex items-center"
           >
+            <RiUserAddFill className="mx-1" />
             Add User
           </button>
         </div>
 
         {/* Search and Role Filter */}
         <div className="mb-4 flex space-x-4">
-          <input
-            type="text"
-            placeholder="Search by name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border p-2 w-1/3 rounded"
-          />
+          <div className="relative w-full md:w-1/3">
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border p-2 pl-10 pr-4 rounded-lg w-full"
+            />
+            <span className="absolute left-3 top-3 text-gray-500">
+              <IoIosSearch />
+            </span>
+          </div>
 
           {/* Status Filter Dropdown */}
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="border p-2 w-1/3 rounded"
+            className="border p-2 w-1/3 rounded-lg"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -169,7 +180,7 @@ const page = () => {
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="border p-2 w-1/3 rounded"
+            className="border p-2 w-1/3 rounded-lg"
           >
             <option value="">All Roles</option>
             <option value="Admin">Admin</option>
@@ -183,15 +194,15 @@ const page = () => {
           </select>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-            <thead className="bg-gray-200 text-center">
+        <div className="overflow-x-auto shadow-xl">
+          <table className="min-w-full bg-white rounded-lg shadow-md ">
+            <thead className=" text-center">
               <tr>
-                <th className="py-3 px-4  text-gray-600">Name</th>
-                <th className="py-3 px-4  text-gray-600">Email</th>
-                <th className="py-3 px-4  text-gray-600">Role</th>
-                <th className="py-3 px-4  text-gray-600">Status</th>
-                <th className="py-3 px-4  text-gray-600">Actions</th>
+                <th className="py-3 px-2  text-gray-600">Name</th>
+                <th className="py-3 px-2  text-gray-600">Email</th>
+                <th className="py-3 px-2  text-gray-600">Role</th>
+                <th className="py-3 px-2  text-gray-600">Status</th>
+                <th className="py-3 px-2  text-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -200,10 +211,10 @@ const page = () => {
                   key={user.id}
                   className="text-center border-b hover:bg-gray-100"
                 >
-                  <td className="py-4 px-4">{user.name}</td>
-                  <td className="py-4 px-4">{user.email}</td>
-                  <td className="py-4 px-4">{user.role}</td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-2">{user.name}</td>
+                  <td className="py-4 px-2">{user.email}</td>
+                  <td className="py-4 px-2">{user.role}</td>
+                  <td className="py-4 px-2 ">
                     <label className="inline-flex items-center">
                       <input
                         type="checkbox"
@@ -223,18 +234,23 @@ const page = () => {
                         ></span>
                       </span>
                     </label>
+                    <span className="ml-2">
+                      {user.status ? "Active" : "Inactive"}
+                    </span>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="px-2 py-2 flex items-center justify-evenly mt-1 border-black">
                     <button
                       onClick={() => handleEdit(user)}
-                      className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition duration-200"
+                      className="bg-[#BAC3FF] text-[#222c61] px-3 py-1 rounded hover:bg-blue-600 transition duration-200 flex items-center"
                     >
+                      <MdEdit className="mx-1" />
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(user.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-200 ml-2"
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-200 ml-2 flex items-center"
                     >
+                      <MdDelete className="mx-1" />
                       Delete
                     </button>
                   </td>
