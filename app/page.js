@@ -6,14 +6,14 @@ import Sidebar from "../components/Sidebar";
 import { RiUserAddFill } from "react-icons/ri";
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, IoIosMenu, IoIosClose } from "react-icons/io";
 
 const page = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  // const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [users, setUsers] = useState([
     {
@@ -127,31 +127,60 @@ const page = () => {
     );
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="flex bg-[#e5e7eb] text-[#29292F]">
-      {/* Sidebar */}
-      {/* <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} /> */}
-      <Sidebar />
+      {/* Hamburger Icon (only visible on small screens) */}
+      <button
+        onClick={toggleSidebar}
+        className="absolute top-4 right-4 z-50 md:hidden"
+      >
+        {isSidebarOpen ? <IoIosClose size={30} /> : <IoIosMenu size={30} />}
+      </button>
+
+      {/* Sidebar (always visible on medium screens and above) */}
+      <div
+        className={`fixed top-0 left-0 h-full bg-[#29292F] text-white w-48 transition-transform transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 md:block z-50`}
+      >
+        <Sidebar />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4">
-        <div className="flex justify-between items-center mb-4 bg-white p-4">
-          <h1 className="text-2xl font-medium">Administrator</h1>
+      <div className={`flex-1 p-4 transition-all duration-300  md:ml-48`}>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4 bg-white p-4">
+          <h1 className="text-2xl font-medium mb-2 self-start md:self-auto">
+            Administrator
+          </h1>{" "}
           <button
             onClick={() => {
               setIsOpen(true);
               setSelectedUser(null);
               setNewUser({ name: "", email: "", role: "", status: true });
             }}
-            className="bg-[#BAC3FF] text-[#222c61] px-4 py-2 rounded hover:bg-blue-600 transition flex items-center"
+            className="bg-[#BAC3FF] text-[#222c61] px-4 py-2 rounded hover:bg-blue-600 transition flex items-center w-full md:w-auto mx-auto md:mx-0 max-w-[80%] md:max-w-none justify-center md:justify-start"
           >
             <RiUserAddFill className="mx-1" />
             Add User
           </button>
         </div>
 
+        {/* Adjustments for small devices */}
+        <div className="flex flex-col items-center md:hidden">
+          <button
+            onClick={toggleSidebar}
+            className="absolute top-4 right-4 z-50"
+          >
+            {isSidebarOpen ? <IoIosClose size={30} /> : <IoIosMenu size={30} />}
+          </button>
+        </div>
+
         {/* Search and Role Filter */}
-        <div className="mb-4 flex space-x-4">
+        <div className="mb-4 py-4 flex flex-col md:flex-row md:space-x-4 sticky top-0 bg-[#e5e7eb] z-10">
           <div className="relative w-full md:w-1/3">
             <input
               type="text"
@@ -169,7 +198,7 @@ const page = () => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="border p-2 w-1/3 rounded-lg"
+            className="border p-2  rounded-lg w-full md:w-1/3 my-2 md:my-0"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -180,7 +209,7 @@ const page = () => {
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="border p-2 w-1/3 rounded-lg"
+            className="border p-2  w-full md:w-1/3 rounded-lg"
           >
             <option value="">All Roles</option>
             <option value="Admin">Admin</option>
@@ -194,14 +223,18 @@ const page = () => {
           </select>
         </div>
 
-        <div className="overflow-x-auto shadow-xl">
+        <div className="overflow-x-auto ">
           <table className="min-w-full bg-white rounded-lg shadow-md ">
             <thead className=" text-center">
               <tr>
                 <th className="py-3 px-2  text-gray-600">Name</th>
-                <th className="py-3 px-2  text-gray-600">Email</th>
-                <th className="py-3 px-2  text-gray-600">Role</th>
-                <th className="py-3 px-2  text-gray-600">Status</th>
+                <th className="py-3 px-2  text-gray-600 hidden sm:table-cell">
+                  Email
+                </th>
+                <th className="py-3 px-2  text-gray-600 ">Role</th>
+                <th className="py-3 px-2  text-gray-600 hidden sm:table-cell">
+                  Status
+                </th>
                 <th className="py-3 px-2  text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -212,9 +245,11 @@ const page = () => {
                   className="text-center border-b hover:bg-gray-100"
                 >
                   <td className="py-4 px-2">{user.name}</td>
-                  <td className="py-4 px-2">{user.email}</td>
+                  <td className="py-4 px-2 hidden sm:table-cell">
+                    {user.email}
+                  </td>
                   <td className="py-4 px-2">{user.role}</td>
-                  <td className="py-4 px-2 ">
+                  <td className="py-4 px-2 hidden sm:table-cell">
                     <label className="inline-flex items-center">
                       <input
                         type="checkbox"
@@ -239,20 +274,24 @@ const page = () => {
                     </span>
                   </td>
                   <td className="px-2 py-2 flex items-center justify-evenly mt-1 border-black">
-                    <button
+                    <div
+                      className="flex items-center bg-[#BAC3FF] text-[#222c61] px-1 rounded hover:bg-blue-600 transition duration-200 "
                       onClick={() => handleEdit(user)}
-                      className="bg-[#BAC3FF] text-[#222c61] px-3 py-1 rounded hover:bg-blue-600 transition duration-200 flex items-center"
                     >
-                      <MdEdit className="mx-1" />
-                      Edit
-                    </button>
-                    <button
+                      <MdEdit className="text-2xl md:text-xl" />
+                      <button className=" px-2 py-1 hidden sm:table-cell ">
+                        Edit
+                      </button>
+                    </div>
+                    <div
+                      className="flex items-center bg-red-500 text-white px-1  rounded hover:bg-red-600 transition duration-200 ml-2 "
                       onClick={() => handleDelete(user.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-200 ml-2 flex items-center"
                     >
-                      <MdDelete className="mx-1" />
-                      Delete
-                    </button>
+                      <MdDelete className="text-2xl md:text-xl" />
+                      <button className=" px-2 py-1 hidden sm:table-cell ">
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
